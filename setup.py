@@ -42,6 +42,6 @@ setup(name='poxls-drupal',
       [console_scripts]
       po-to-xls = poxls.po_to_xls:main
       xls-to-po = poxls.xls_to_po:main
-      xls-to-po-drupal = poxls.xls_to_po:main
+      xls-to-po-drupal = poxls.xls_to_po_drupal:main
       '''
       )

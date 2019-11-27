@@ -10,7 +10,7 @@ install_requires=[
         'argparse;python_version<"3.0"',
         ]
 
-setup(name='poxls',
+setup(name='poxls-drupal',
       version=version,
       description='Convert between Excel and PO files',
       long_description=open('README.rst').read() + '\n' + \
@@ -41,6 +41,7 @@ setup(name='poxls',
       entry_points='''
       [console_scripts]
       po-to-xls = poxls.po_to_xls:main
+      po-to-xls-drupal = poxls.po_to_xls_drupal:main
       xls-to-po = poxls.xls_to_po:main
       '''
       )

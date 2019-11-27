@@ -1,6 +1,16 @@
 Translating via spreadsheets
 ============================
 
+The goal of this fork for Drupal
+--------------------------------
+
+We need to adapt the headers and the logic to handle the plurals in the conversion. First step is to test new scripts like:
+
+* xls_to_po_drupal.py
+* po_to_xls_drupal.py (later)
+
+
+
 Not all translators are comfortable with using PO-editors such as `Poedit
 <http://www.poedit.net/>`_ or translation tools like `Transifex
 <http://trac.transifex.org/>`_. For them this package provides simple tools to

@@ -62,6 +62,7 @@ Translations can be converted back from a spreadsheet into a PO-file using the
 `xls-to-po` command::
 
     xls-to-po nl texts.xlsx nl.po
+    For drupal use xls-to-po-drupal
 
 This will take the Dutch (`nl`) translations from `texts.xls`, and (re)create a
 ``nl.po`` file using those. You can merge those into an existing po-file using

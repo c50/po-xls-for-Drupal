@@ -49,6 +49,7 @@ def main(locale, input_file, output_file):
     catalog.metata_is_fuzzy = True
     catalog.metadata = OrderedDict()
     catalog.metadata['PO-Revision-Date'] = po_timestamp(input_file)
+    catalog.metadata['MIME-Version'] = '1.0'
     catalog.metadata['Content-Type'] = 'text/plain; charset=UTF-8'
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
     catalog.metadata['Language'] = locale

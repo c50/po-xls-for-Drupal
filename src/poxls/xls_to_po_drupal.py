@@ -13,7 +13,7 @@ try:
     unicode
 except NameError:
     unicode = str
-
+import pycountry
 
 def save(output_file, catalog):
     """Save catalog to a PO file.
@@ -22,6 +22,7 @@ def save(output_file, catalog):
     catalog to a file safely created by click.
     """
     output_file.write(unicode(catalog))
+    output_file.write("\n") # add final newline
 
 
 def po_timestamp(filename):
@@ -45,14 +46,17 @@ def main(locale, input_file, output_file):
     """
     book = openpyxl.load_workbook(input_file)
     catalog = polib.POFile()
-    catalog.header = u'This file was generated from %s' % input_file
+    catalog.header = 'Futurium translation for Drupal by CNECT.R3'
     catalog.metata_is_fuzzy = True
     catalog.metadata = OrderedDict()
-    catalog.metadata['PO-Revision-Date'] = po_timestamp(input_file)
-    catalog.metadata['Content-Type'] = 'text/plain; charset=UTF-8'
+    catalog.metadata['Project-Id-Version'] = 'Drupal core (8.8.0-rc1)'
+    catalog.metadata['POT-Creation-Date'] = po_timestamp(input_file)
+    catalog.metadata['PO-Revision-Date'] = 'YYYY-mm-DD HH:MM+ZZZZ'
+    catalog.metadata['Content-Type'] = 'text/plain; charset=utf-8'
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
-    catalog.metadata['Language'] = locale
-    catalog.metadata['Generated-By'] = 'xls-to-po 1.0'
+    catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
+    catalog.metadata['MIME-Version'] = '1.0'
+    catalog.metadata['Plural-Forms'] = 'nplurals=2; plural=(n>1);'
 
     for sheet in book.worksheets:
         if sheet.max_row < 2:
@@ -75,34 +79,39 @@ def main(locale, input_file, output_file):
             continue
 
         rows = list(row_iterator)
+        skip_line = False
         for i, row in enumerate(rows):
-            row = [c.value for c in row]
-            msgid = row[msgid_column]
-            if not msgid:
-                continue
-            try:
-                entry = polib.POEntry(
-                        msgid=msgid
-                        )
-                if "1 " in msgid:
-                    next_row = [c.value for c in rows[i+1]]
-                    if "@count" in next_row[msgid_column]:
-                        entry.msgid_plural = next_row[msgid_column]
-                        entry.msgstr[0] = row[msgstr_column]
-                        entry.msgstr[1] = next_row[msgstr_column]
+            if not skip_line:
+                row = [c.value for c in row]
+                msgid = row[msgid_column]
+                if not msgid:
+                    continue
+                try:
+                    entry = polib.POEntry(
+                            msgid=msgid
+                            )
+                    if "1 " in msgid:
+                        next_row = [c.value for c in rows[i+1]]
+                        if "@count" in next_row[msgid_column]:
+                            skip_line = True # don't handle plural twice
+                            entry.msgid_plural = next_row[msgid_column]
+                            entry.msgstr_plural[0] = row[msgstr_column]
+                            entry.msgstr_plural[1] = next_row[msgstr_column]
+                        else:
+                            entry.msgstr = row[msgstr_column]    
                     else:
-                        entry.msgstr = row[msgstr_column]    
-                else:
-                    entry.msgstr = row[msgstr_column]
-                if msgctxt_column is not None and row[msgctxt_column]:
-                    entry.msgctxt = row[msgctxt_column]
-                if tcomment_column:
-                    entry.tcomment = row[tcomment_column]
-                if comment_column:
-                    entry.comment = row[comment_column]
-                catalog.append(entry)
-            except IndexError:
-                click.echo('Row %s is too short' % row, err=True)
+                        entry.msgstr = row[msgstr_column]
+                    if msgctxt_column is not None and row[msgctxt_column]:
+                        entry.msgctxt = row[msgctxt_column]
+                    if tcomment_column:
+                        entry.tcomment = row[tcomment_column]
+                    if comment_column:
+                        entry.comment = row[comment_column]
+                    catalog.append(entry)
+                except IndexError:
+                    click.echo('Row %s is too short' % row, err=True)
+            else:
+                skip_line = False # reset to process next entry
 
     if not catalog:
         click.echo('No messages found, aborting', err=True)

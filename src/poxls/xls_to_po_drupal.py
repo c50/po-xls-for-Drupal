@@ -100,6 +100,11 @@ def main(locale, input_file, output_file):
                                 plural1, plural2 = next_row[msgstr_column].split("/")
                                 entry.msgstr_plural[1] = plural1
                                 entry.msgstr_plural[2] = f"@count {plural2}"
+                            elif "(" in next_row[msgstr_column]: # handle parentheses
+                                plural1 = next_row[msgstr_column].split("(")[0]
+                                plural2 = "".join([l for l in next_row[msgstr_column].split()[1] if l.isalpha()])
+                                entry.msgstr_plural[1] = plural1
+                                entry.msgstr_plural[2] = f"@count {plural2}"
                             else:
                                 entry.msgstr_plural[1] = next_row[msgstr_column]
                         else:

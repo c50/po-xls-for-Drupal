@@ -57,12 +57,28 @@ def main(locale, input_file, output_file):
     catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
     catalog.metadata['MIME-Version'] = '1.0'
 
-    if locale in ['es']:
+    if locale in ['bg', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'hu', 'it', 'nl', 'pt', 'sv']:
         plural_form = 'nplurals=2; plural=(n!=1);'
     elif locale in ['fr']:
         plural_form = 'nplurals=2; plural=(n>1);'
-    elif locale in ['sk']:
+    elif locale in ['cs', 'sk']:
         plural_form = 'nplurals=3; plural=((n==1)?(0):(((n>=2)&&(n<=4))?(1):2));'
+    elif locale in ['lv']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);'
+    elif locale in ['ro']:
+        plural_form = 'nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);'
+    elif locale in ['lt']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['pl']:
+        plural_form = 'nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['hr']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['sl']:
+        plural_form = 'nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);'
+    elif locale in ['mt']:
+        plural_form = 'nplurals=4; plural=(n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);'
+    elif locale in ['ga']:
+        plural_form = 'nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : (n>2 && n<7) ? 2 :(n>6 && n<11) ? 3 : 4;'
     else:
         print(f"Unknown plural form for {locale}")
         sys.exit(1)

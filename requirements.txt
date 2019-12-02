@@ -1,0 +1,5 @@
+Click==7.0
+pycountry==19.8.18
+polib==1.1.0
+openpyxl==3.0.2
+ordereddict==1.1

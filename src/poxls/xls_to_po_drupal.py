@@ -99,7 +99,7 @@ def main(locale, input_file, output_file):
                             if "/" in next_row[msgstr_column]: # handle Slovak case with multiple plural forms
                                 plural1, plural2 = next_row[msgstr_column].split("/")
                                 entry.msgstr_plural[1] = plural1
-                                entry.msgstr_plural[2] = plural2
+                                entry.msgstr_plural[2] = f"@count {plural2}"
                             else:
                                 entry.msgstr_plural[1] = next_row[msgstr_column]
                         else:

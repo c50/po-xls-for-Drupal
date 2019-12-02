@@ -56,7 +56,18 @@ def main(locale, input_file, output_file):
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
     catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
     catalog.metadata['MIME-Version'] = '1.0'
-    catalog.metadata['Plural-Forms'] = 'nplurals=2; plural=(n>1);'
+
+    if locale in ['es']:
+        plural_form = 'nplurals=2; plural=(n!=1);'
+    elif locale in ['fr']:
+        plural_form = 'nplurals=2; plural=(n>1);'
+    elif locale in ['sk']:
+        plural_form = 'nplurals=3; plural=((n==1)?(0):(((n>=2)&&(n<=4))?(1):2));'
+    else:
+        print(f"Unknown plural form for {locale}")
+        sys.exit(1)
+
+    catalog.metadata['Plural-Forms'] = plural_form
 
     for sheet in book.worksheets:
         if sheet.max_row < 2:

@@ -96,7 +96,12 @@ def main(locale, input_file, output_file):
                             skip_line = True # don't handle plural twice
                             entry.msgid_plural = next_row[msgid_column]
                             entry.msgstr_plural[0] = row[msgstr_column]
-                            entry.msgstr_plural[1] = next_row[msgstr_column]
+                            if "/" in next_row[msgstr_column]: # handle Slovak case with multiple plural forms
+                                plural1, plural2 = next_row[msgstr_column].split("/")
+                                entry.msgstr_plural[1] = plural1
+                                entry.msgstr_plural[2] = plural2
+                            else:
+                                entry.msgstr_plural[1] = next_row[msgstr_column]
                         else:
                             entry.msgstr = row[msgstr_column]    
                     else:

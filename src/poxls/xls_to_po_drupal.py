@@ -13,7 +13,7 @@ try:
     unicode
 except NameError:
     unicode = str
-
+import pycountry
 
 def save(output_file, catalog):
     """Save catalog to a PO file.
@@ -22,6 +22,7 @@ def save(output_file, catalog):
     catalog to a file safely created by click.
     """
     output_file.write(unicode(catalog))
+    output_file.write("\n") # add final newline
 
 
 def po_timestamp(filename):
@@ -45,14 +46,44 @@ def main(locale, input_file, output_file):
     """
     book = openpyxl.load_workbook(input_file)
     catalog = polib.POFile()
-    catalog.header = u'This file was generated from %s' % input_file
+    catalog.header = 'Futurium translation for Drupal by CNECT.R3'
     catalog.metata_is_fuzzy = True
     catalog.metadata = OrderedDict()
-    catalog.metadata['PO-Revision-Date'] = po_timestamp(input_file)
-    catalog.metadata['Content-Type'] = 'text/plain; charset=UTF-8'
+    catalog.metadata['Project-Id-Version'] = 'Drupal core (8.8.0-rc1)'
+    catalog.metadata['POT-Creation-Date'] = po_timestamp(input_file)
+    catalog.metadata['PO-Revision-Date'] = 'YYYY-mm-DD HH:MM+ZZZZ'
+    catalog.metadata['Content-Type'] = 'text/plain; charset=utf-8'
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
-    catalog.metadata['Language'] = locale
-    catalog.metadata['Generated-By'] = 'xls-to-po 1.0'
+    catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
+    catalog.metadata['MIME-Version'] = '1.0'
+
+    if locale in ['bg', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'hu', 'it', 'nl', 'pt', 'sv']:
+        plural_form = 'nplurals=2; plural=(n!=1);'
+    elif locale in ['fr']:
+        plural_form = 'nplurals=2; plural=(n>1);'
+    elif locale in ['cs', 'sk']:
+        plural_form = 'nplurals=3; plural=((n==1)?(0):(((n>=2)&&(n<=4))?(1):2));'
+    elif locale in ['lv']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);'
+    elif locale in ['ro']:
+        plural_form = 'nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);'
+    elif locale in ['lt']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['pl']:
+        plural_form = 'nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['hr']:
+        plural_form = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);'
+    elif locale in ['sl']:
+        plural_form = 'nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);'
+    elif locale in ['mt']:
+        plural_form = 'nplurals=4; plural=(n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);'
+    elif locale in ['ga']:
+        plural_form = 'nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : (n>2 && n<7) ? 2 :(n>6 && n<11) ? 3 : 4;'
+    else:
+        print(f"Unknown plural form for {locale}")
+        sys.exit(1)
+
+    catalog.metadata['Plural-Forms'] = plural_form
 
     for sheet in book.worksheets:
         if sheet.max_row < 2:
@@ -74,16 +105,39 @@ def main(locale, input_file, output_file):
             click.echo(u'Could not find a "%s" column' % locale, err=True)
             continue
 
-        with click.progressbar(row_iterator, length=sheet.max_row - 1,
-                label='Extracting messages') as rows:
-            for row in rows:
+        rows = list(row_iterator)
+        skip_line = False
+        for i, row in enumerate(rows):
+            if not skip_line:
                 row = [c.value for c in row]
-                if not row[msgid_column]:
+                msgid = row[msgid_column]
+                if not msgid:
                     continue
                 try:
                     entry = polib.POEntry(
-                            msgid=row[msgid_column],
-                            msgstr=row[msgstr_column] or '')
+                            msgid=msgid
+                            )
+                    if "1 " in msgid:
+                        next_row = [c.value for c in rows[i+1]]
+                        if "@count" in next_row[msgid_column]:
+                            skip_line = True # don't handle plural twice
+                            entry.msgid_plural = next_row[msgid_column]
+                            entry.msgstr_plural[0] = row[msgstr_column]
+                            if "/" in next_row[msgstr_column]: # handle Slovak case with multiple plural forms
+                                plural1, plural2 = next_row[msgstr_column].split("/")
+                                entry.msgstr_plural[1] = plural1
+                                entry.msgstr_plural[2] = f"@count {plural2}"
+                            elif "(" in next_row[msgstr_column]: # handle parentheses
+                                plural1 = next_row[msgstr_column].split("(")[0]
+                                plural2 = "".join([l for l in next_row[msgstr_column].split()[1] if l.isalpha()])
+                                entry.msgstr_plural[1] = plural1
+                                entry.msgstr_plural[2] = f"@count {plural2}"
+                            else:
+                                entry.msgstr_plural[1] = next_row[msgstr_column]
+                        else:
+                            entry.msgstr = row[msgstr_column]    
+                    else:
+                        entry.msgstr = row[msgstr_column]
                     if msgctxt_column is not None and row[msgctxt_column]:
                         entry.msgctxt = row[msgctxt_column]
                     if tcomment_column:
@@ -93,6 +147,8 @@ def main(locale, input_file, output_file):
                     catalog.append(entry)
                 except IndexError:
                     click.echo('Row %s is too short' % row, err=True)
+            else:
+                skip_line = False # reset to process next entry
 
     if not catalog:
         click.echo('No messages found, aborting', err=True)

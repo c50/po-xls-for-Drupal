@@ -40,7 +40,9 @@ def po_timestamp(filename):
         type=click.Path(exists=True, readable=True),
         required=True)
 @click.argument('output_file', type=click.File('w', encoding='utf-8'), required=True)
-def main(locale, input_file, output_file):
+@click.argument('project', required=True)
+@click.argument('version', required=True)
+def main(locale, input_file, output_file, project, version):
     """
     Convert a XLS(X) file to a .PO file
     """
@@ -49,7 +51,7 @@ def main(locale, input_file, output_file):
     catalog.header = 'Futurium translation for Drupal by CNECT.R3'
     catalog.metata_is_fuzzy = True
     catalog.metadata = OrderedDict()
-    catalog.metadata['Project-Id-Version'] = 'Futurium (1.1.0-rc1)'
+    catalog.metadata['Project-Id-Version'] = f'{project} ({version})'
     catalog.metadata['POT-Creation-Date'] = po_timestamp(input_file)
     catalog.metadata['PO-Revision-Date'] = 'YYYY-mm-DD HH:MM+ZZZZ'
     catalog.metadata['Content-Type'] = 'text/plain; charset=utf-8'

@@ -46,7 +46,8 @@ def main(locale, input_file, output_file, project, version):
     """
     Convert a XLS(X) file to a .PO file
     """
-    click.echo(f'Processing file {input_file}...')
+    language = pycountry.languages.get(alpha_2=locale).name
+    click.echo(f'Processing {language} translations...')
     book = openpyxl.load_workbook(input_file)
     catalog = polib.POFile()
     catalog.header = 'Futurium translation for Drupal by CNECT.R3'
@@ -57,7 +58,7 @@ def main(locale, input_file, output_file, project, version):
     catalog.metadata['PO-Revision-Date'] = 'YYYY-mm-DD HH:MM+ZZZZ'
     catalog.metadata['Content-Type'] = 'text/plain; charset=utf-8'
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
-    catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
+    catalog.metadata['Language-Team'] = language
     catalog.metadata['MIME-Version'] = '1.0'
 
     if locale in ['bg', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'hu', 'it', 'nl', 'pt', 'sv']:

@@ -40,21 +40,25 @@ def po_timestamp(filename):
         type=click.Path(exists=True, readable=True),
         required=True)
 @click.argument('output_file', type=click.File('w', encoding='utf-8'), required=True)
-def main(locale, input_file, output_file):
+@click.argument('project', required=True)
+@click.argument('version', required=True)
+def main(locale, input_file, output_file, project, version):
     """
     Convert a XLS(X) file to a .PO file
     """
+    language = pycountry.languages.get(alpha_2=locale).name
+    click.echo(f'Processing {language} translations...')
     book = openpyxl.load_workbook(input_file)
     catalog = polib.POFile()
     catalog.header = 'Futurium translation for Drupal by CNECT.R3'
     catalog.metata_is_fuzzy = True
     catalog.metadata = OrderedDict()
-    catalog.metadata['Project-Id-Version'] = 'Futurium (1.1.0-rc1)'
+    catalog.metadata['Project-Id-Version'] = f'{project} ({version})'
     catalog.metadata['POT-Creation-Date'] = po_timestamp(input_file)
     catalog.metadata['PO-Revision-Date'] = 'YYYY-mm-DD HH:MM+ZZZZ'
     catalog.metadata['Content-Type'] = 'text/plain; charset=utf-8'
     catalog.metadata['Content-Transfer-Encoding'] = '8bit'
-    catalog.metadata['Language-Team'] = pycountry.languages.get(alpha_2=locale).name
+    catalog.metadata['Language-Team'] = language
     catalog.metadata['MIME-Version'] = '1.0'
 
     if locale in ['bg', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'hu', 'it', 'nl', 'pt', 'sv']:
@@ -88,7 +92,6 @@ def main(locale, input_file, output_file):
     for sheet in book.worksheets:
         if sheet.max_row < 2:
             continue
-        click.echo('Processing sheet %s' % sheet.title)
         row_iterator = sheet.iter_rows()
         headers = [c.value for c in next(row_iterator)]
         headers = dict((b, a) for (a, b) in enumerate(headers))

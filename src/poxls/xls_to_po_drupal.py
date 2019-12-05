@@ -46,6 +46,7 @@ def main(locale, input_file, output_file, project, version):
     """
     Convert a XLS(X) file to a .PO file
     """
+    click.echo(f'Processing file {input_file}...')
     book = openpyxl.load_workbook(input_file)
     catalog = polib.POFile()
     catalog.header = 'Futurium translation for Drupal by CNECT.R3'
@@ -90,7 +91,6 @@ def main(locale, input_file, output_file, project, version):
     for sheet in book.worksheets:
         if sheet.max_row < 2:
             continue
-        click.echo('Processing sheet %s' % sheet.title)
         row_iterator = sheet.iter_rows()
         headers = [c.value for c in next(row_iterator)]
         headers = dict((b, a) for (a, b) in enumerate(headers))

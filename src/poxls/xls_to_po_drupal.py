@@ -128,15 +128,27 @@ def main(locale, input_file, output_file, project, version):
                             entry.msgstr_plural[0] = row[msgstr_column]
                             if "/" in next_row[msgstr_column]: # handle Slovak case with multiple plural forms
                                 plural1, plural2 = next_row[msgstr_column].split("/")
+                                if "@count " not in plural1: # missing space
+                                    plural1 = plural1.replace("@count", "@count ")
                                 entry.msgstr_plural[1] = plural1
                                 entry.msgstr_plural[2] = f"@count {plural2}"
                             elif "(" in next_row[msgstr_column]: # handle parentheses
                                 plural1 = next_row[msgstr_column].split("(")[0]
-                                plural2 = "".join([l for l in next_row[msgstr_column].split()[1] if l.isalpha()])
+                                if "@count " not in plural1: # missing space
+                                    plural1 = plural1.replace("@count", "@count ")
+                                try:
+                                    plural2 = "".join([l for l in next_row[msgstr_column].split()[1] if l.isalpha()])
+                                except IndexError:
+                                    print(f"Wrong plural format: {next_row[msgstr_column]}")
+                                    print("Aborting")
+                                    sys.exit()
                                 entry.msgstr_plural[1] = plural1
                                 entry.msgstr_plural[2] = f"@count {plural2}"
                             else:
-                                entry.msgstr_plural[1] = next_row[msgstr_column]
+                                plural1 = next_row[msgstr_column]
+                                if "@count " not in plural1: # missing space
+                                    plural1 = plural1.replace("@count", "@count ")
+                                entry.msgstr_plural[1] = plural1
                         else:
                             entry.msgstr = row[msgstr_column]    
                     else:

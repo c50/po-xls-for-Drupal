@@ -1,6 +1,7 @@
 /src/poxls.egg-info
 /dist
 /build
+/futurium-translations
 *.pyo
 *.pyc
 *.egg

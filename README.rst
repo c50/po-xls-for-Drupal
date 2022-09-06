@@ -1,6 +1,14 @@
 Translating via spreadsheets
 ============================
 
+The goal of this fork for Drupal
+--------------------------------
+
+We need to adapt the headers and the logic to handle the plurals in the conversion. First step is to test new scripts like:
+
+* xls_to_po_drupal.py
+* po_to_xls_drupal.py (later)
+
 Not all translators are comfortable with using PO-editors such as
 `Poedit <http://www.poedit.net/>`_ or translation tools like `WebLate
 <https://weblate.org/en-gb/>`_ or `Transifex
@@ -12,6 +20,7 @@ multiple similar languages at the same time (for example simplified
 and traditional chinese).
 
 The format for spreadsheets is simple:
+
 
 * If any message use a message context the first column will specify the
   context.  If message contexts are not used this column will be skipped.
@@ -64,6 +73,7 @@ Translations can be converted back from a spreadsheet into a PO-file using the
 `xls-to-po` command::
 
     xls-to-po nl texts.xlsx nl.po
+    For drupal use xls-to-po-drupal
 
 This will take the Dutch (`nl`) translations from `texts.xls`, and (re)create a
 ``nl.po`` file using those. You can merge those into an existing po-file using

@@ -9,17 +9,18 @@ We need to adapt the headers and the logic to handle the plurals in the conversi
 * xls_to_po_drupal.py
 * po_to_xls_drupal.py (later)
 
+Not all translators are comfortable with using PO-editors such as
+`Poedit <http://www.poedit.net/>`_ or translation tools like `WebLate
+<https://weblate.org/en-gb/>`_ or `Transifex
+<https://www.transifex.com/>`_. For them this package provides simple
+tools to convert PO-files to `xlsx`-files and back again. This also
+has another benefit: it is possible to include multiple languages in
+a single spreadsheet, which can be helpful when translating to
+multiple similar languages at the same time (for example simplified
+and traditional chinese).
 
+The format for spreadsheets is simple:
 
-Not all translators are comfortable with using PO-editors such as `Poedit
-<http://www.poedit.net/>`_ or translation tools like `Transifex
-<http://trac.transifex.org/>`_. For them this package provides simple tools to
-convert PO-files to `xlsx`-files and back again. This also has another benefit:
-it is possible to include multiple languages in a single spreadsheet, which can be
-helpful when translating to multiple similar languages at the same time (for
-example simplified and traditional chinese).
-
-The format for spreadsheets is simple: 
 
 * If any message use a message context the first column will specify the
   context.  If message contexts are not used this column will be skipped.
@@ -77,3 +78,9 @@ Translations can be converted back from a spreadsheet into a PO-file using the
 This will take the Dutch (`nl`) translations from `texts.xls`, and (re)create a
 ``nl.po`` file using those. You can merge those into an existing po-file using
 a tool like gettext's ``msgmerge``.
+
+You can ignore specific sheets by using ``-i`` or ``--ignore``. For example:
+
+    xls-to-po -i 'Read Me First' -i Appendix  nl texts.xlsx nl.po
+
+Will ignore sheets ``Read Me First`` and ``Appendix`` of the book.

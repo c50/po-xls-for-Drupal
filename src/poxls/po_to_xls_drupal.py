@@ -43,7 +43,7 @@ def main(comments, output, catalogs):
     """
     Convert .PO files to an XLSX file.
 
-    po-to-xls tries to guess the locale for PO files by looking at the
+    po-to-xls-drupal tries to guess the locale for PO files by looking at the
     "Language" key in the PO metadata, falling back to the filename. You
     can also specify the locale manually by adding prefixing the filename
     with "<locale>:". For example: "nl:locales/nl/mydomain.po".

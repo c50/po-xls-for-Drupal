@@ -6,3 +6,4 @@
 *.pyc
 *.egg
 *.swp
+venv

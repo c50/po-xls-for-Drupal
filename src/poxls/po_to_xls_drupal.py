@@ -28,7 +28,7 @@ class CatalogFile(click.Path):
             catalog = polib.pofile(real_path)
             locale = catalog.metadata.get('Language')
             if not locale:
-                locale = os.path.splitext(os.path.basename(real_path))[0][-2:]
+                locale = os.path.splitext(os.path.basename(real_path))[0][-2:] # last part to handle the pt-pt case
             return (locale, catalog)
 
 

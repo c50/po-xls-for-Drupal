@@ -1,4 +1,5 @@
 import os
+import sys
 import click
 import polib
 import openpyxl
@@ -88,8 +89,11 @@ def main(comments, output, catalogs):
     sheet.append(row)
 
     ref_catalog = catalogs[0][1]
+    locale = catalog.metadata['Language-Team']
+    if locale == "Modern Greek (1453-)":
+        locale = "Greek"
 
-    with click.progressbar(messages, label='Writing catalog to sheet') as todo:
+    with click.progressbar(messages, label=f'Writing {locale} catalog to sheet') as todo:
         for (msgid, msgctxt, message) in todo:
             row = []
             if has_msgctxt_column is not None:

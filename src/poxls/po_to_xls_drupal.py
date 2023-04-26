@@ -122,6 +122,12 @@ def main(comments, output, catalogs):
                     cell = WriteOnlyCell(sheet, value=msg.msgstr)
                     cell.font = fuzzy_font
                     row.append(cell)
+                if msg.msgid_plural:
+                    msglist = []
+                    for index in sorted(msg.msgstr_plural.keys()):
+                        msglist.append(msg.msgstr_plural[index])
+                    msgstr = " / ".join(msglist)
+                    row.append(msgstr)
                 else:
                     row.append(msg.msgstr)
             sheet.append(row)

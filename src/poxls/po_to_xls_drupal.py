@@ -98,7 +98,7 @@ def main(comments, output, catalogs):
             row = []
             if has_msgctxt_column is not None:
                 row.append(msgctxt)
-            row.append(msgid)
+            row.append(msgid.strip())
             msg = ref_catalog.find(msgid, msgctxt=msgctxt)
             if has_occurrences_column:
                 o = []
@@ -129,7 +129,7 @@ def main(comments, output, catalogs):
                     msgstr = " / ".join(msglist)
                     row.append(msgstr)
                 else:
-                    row.append(msg.msgstr)
+                    row.append(msg.msgstr.strip())
             sheet.append(row)
 
     sheet.freeze_panes = 'B1'

@@ -1,5 +1,4 @@
-Click==7.0
-pycountry==19.8.18
-polib==1.1.0
-openpyxl==2.6.3
-ordereddict==1.1
+click==8.1.8
+pycountry==22.3.5
+polib==1.2.0
+openpyxl==3.0.10
